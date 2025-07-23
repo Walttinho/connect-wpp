@@ -15,6 +15,13 @@ import {
   Search,
   Settings,
   X,
+  Plus,
+  Camera,
+  File,
+  Video,
+  Mic,
+  Menu,
+  ArrowLeft,
 } from "lucide-react";
 
 // Types
@@ -51,14 +58,24 @@ interface MessageTemplate {
   category: string;
 }
 
+interface MediaOption {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  action: string;
+}
+
 const WhatsAppSalesforceApp: React.FC = () => {
   const [activeView, setActiveView] = useState<"chat" | "salesforce">("chat");
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [newMessage, setNewMessage] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showTemplates, setShowTemplates] = useState<boolean>(false);
+  const [showMediaDropdown, setShowMediaDropdown] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showSidebar, setShowSidebar] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mediaDropdownRef = useRef<HTMLDivElement>(null);
 
   // Mock data para conversas do WhatsApp
   const [chats, setChats] = useState<Chat[]>([
@@ -207,6 +224,40 @@ const WhatsAppSalesforceApp: React.FC = () => {
     },
   ];
 
+  // Opções de mídia
+  const mediaOptions: MediaOption[] = [
+    {
+      id: "camera",
+      name: "Câmera",
+      icon: <Camera className="w-5 h-5" />,
+      action: "camera",
+    },
+    {
+      id: "file",
+      name: "Arquivo",
+      icon: <File className="w-5 h-5" />,
+      action: "file",
+    },
+    {
+      id: "video",
+      name: "Vídeo",
+      icon: <Video className="w-5 h-5" />,
+      action: "video",
+    },
+    {
+      id: "audio",
+      name: "Áudio",
+      icon: <Mic className="w-5 h-5" />,
+      action: "audio",
+    },
+    {
+      id: "template",
+      name: "Templates",
+      icon: <FileText className="w-5 h-5" />,
+      action: "template",
+    },
+  ];
+
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
@@ -249,7 +300,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
       case "hot":
         return "bg-red-100 text-red-800 border-red-200";
       case "warm":
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "cold":
         return "bg-blue-100 text-blue-800 border-blue-200";
       default:
@@ -338,12 +389,54 @@ const WhatsAppSalesforceApp: React.FC = () => {
     // Na implementação real, isso carregaria o Salesforce com o lead específico
   };
 
+  const handleMediaAction = (action: string): void => {
+    switch (action) {
+      case "template":
+        setShowTemplates(!showTemplates);
+        break;
+      case "camera":
+        console.log("Abrir câmera");
+        // Implementar funcionalidade da câmera
+        break;
+      case "file":
+        console.log("Selecionar arquivo");
+        // Implementar seleção de arquivo
+        break;
+      case "video":
+        console.log("Selecionar vídeo");
+        // Implementar seleção de vídeo
+        break;
+      case "audio":
+        console.log("Gravar áudio");
+        // Implementar gravação de áudio
+        break;
+    }
+    setShowMediaDropdown(false);
+  };
+
   const filteredChats = chats.filter(
     (chat) =>
       chat.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       chat.contact.phone.includes(searchTerm) ||
       chat.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mediaDropdownRef.current &&
+        !mediaDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowMediaDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -357,28 +450,36 @@ const WhatsAppSalesforceApp: React.FC = () => {
       <div className="bg-white shadow-sm border-b border-blue-100 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            {/* Menu Mobile */}
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="md:hidden p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            
             <div className="flex bg-blue-100 rounded-lg p-1">
               <button
                 onClick={() => setActiveView("chat")}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-2 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
                   activeView === "chat"
                     ? "bg-blue-500 text-white shadow-sm"
                     : "text-blue-600 hover:bg-blue-50"
                 }`}
               >
-                <MessageCircle className="w-4 h-4 inline mr-2" />
-                WhatsApp
+                <MessageCircle className="w-4 h-4 inline mr-1 md:mr-2" />
+                <span className="hidden sm:inline">WhatsApp</span>
               </button>
               <button
                 onClick={() => setActiveView("salesforce")}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-2 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
                   activeView === "salesforce"
                     ? "bg-gray-500 text-white shadow-sm"
                     : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
-                <ExternalLink className="w-4 h-4 inline mr-2" />
-                Salesforce
+                <ExternalLink className="w-4 h-4 inline mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Salesforce</span>
               </button>
             </div>
           </div>
@@ -391,9 +492,34 @@ const WhatsAppSalesforceApp: React.FC = () => {
       </div>
 
       {activeView === "chat" ? (
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden relative">
+          {/* Sidebar Mobile Overlay */}
+          {showSidebar && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+              onClick={() => setShowSidebar(false)}
+            />
+          )}
+
           {/* Lista de Conversas */}
-          <div className="w-80 bg-white border-r border-blue-100 flex flex-col">
+          <div className={`
+            ${showSidebar ? 'translate-x-0' : '-translate-x-full'}
+            md:translate-x-0 transition-transform duration-300 ease-in-out
+            fixed md:relative z-50 md:z-0
+            w-80 md:w-80 lg:w-96 bg-white border-r border-blue-100 flex flex-col
+            h-full
+          `}>
+            {/* Header da Sidebar Mobile */}
+            <div className="md:hidden flex items-center justify-between p-4 border-b border-blue-100">
+              <h2 className="font-semibold text-gray-900">Conversas</h2>
+              <button
+                onClick={() => setShowSidebar(false)}
+                className="p-2 text-gray-500 hover:text-gray-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             {/* Search */}
             <div className="p-4 border-b border-blue-100">
               <div className="relative">
@@ -403,7 +529,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                   placeholder="Buscar conversas..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
               </div>
             </div>
@@ -413,25 +539,28 @@ const WhatsAppSalesforceApp: React.FC = () => {
               {filteredChats.map((chat) => (
                 <div
                   key={chat.id}
-                  onClick={() => setSelectedChat(chat)}
-                  className={`p-4 border-b border-blue-50 cursor-pointer transition-colors hover:bg-blue-50 ${
+                  onClick={() => {
+                    setSelectedChat(chat);
+                    setShowSidebar(false);
+                  }}
+                  className={`p-3 md:p-4 border-b border-blue-50 cursor-pointer transition-colors hover:bg-blue-50 ${
                     selectedChat?.id === chat.id
                       ? "bg-blue-100 border-l-4 border-l-blue-500"
                       : ""
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-gray-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-gray-500 rounded-full flex items-center justify-center text-white font-semibold text-xs md:text-sm">
                       {chat.contact.avatar}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <h3 className="font-semibold text-gray-900 truncate">
+                          <h3 className="font-semibold text-gray-900 truncate text-sm">
                             {chat.contact.name}
                           </h3>
                           <span
-                            className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(
+                            className={`px-1 md:px-2 py-1 text-xs rounded-full border ${getStatusColor(
                               chat.contact.status
                             )}`}
                           >
@@ -443,7 +572,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                             {formatDate(chat.timestamp)}
                           </span>
                           {chat.unread > 0 && (
-                            <span className="bg-gray-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                            <span className="bg-green-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
                               {chat.unread}
                             </span>
                           )}
@@ -481,17 +610,23 @@ const WhatsAppSalesforceApp: React.FC = () => {
           {selectedChat ? (
             <div className="flex-1 flex flex-col bg-gradient-to-b from-blue-25 to-gray-25">
               {/* Header do Chat */}
-              <div className="bg-white border-b border-blue-100 p-4">
+              <div className="bg-white border-b border-blue-100 p-3 md:p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-gray-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    <button
+                      onClick={() => setSelectedChat(null)}
+                      className="md:hidden p-2 text-gray-500 hover:text-gray-700 rounded-lg"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-gray-500 rounded-full flex items-center justify-center text-white font-semibold text-xs md:text-sm">
                       {selectedChat.contact.avatar}
                     </div>
                     <div>
-                      <h2 className="font-semibold text-gray-900">
+                      <h2 className="font-semibold text-gray-900 text-sm md:text-base">
                         {selectedChat.contact.name}
                       </h2>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs md:text-sm text-gray-500">
                         {selectedChat.contact.leadId}
                       </p>
                     </div>
@@ -503,25 +638,25 @@ const WhatsAppSalesforceApp: React.FC = () => {
                       {selectedChat.contact.status}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 md:space-x-2">
                     <button
                       onClick={() =>
                         openSalesforceContact(selectedChat.contact.leadId)
                       }
-                      className="flex items-center space-x-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      className="flex items-center space-x-1 md:space-x-2 px-2 md:px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs md:text-sm"
                     >
-                      <User className="w-4 h-4" />
-                      <span>Ver Lead</span>
+                      <User className="w-3 h-3 md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Ver Lead</span>
                     </button>
                     <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
-                      <Phone className="w-5 h-5" />
+                      <Phone className="w-4 h-4 md:w-5 md:h-5" />
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Mensagens */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
                 {selectedChat.messages.map((message) => (
                   <div
                     key={message.id}
@@ -530,7 +665,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                     }`}
                   >
                     <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      className={`max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-3 md:px-4 py-2 rounded-lg ${
                         message.sent
                           ? "bg-blue-500 text-white"
                           : "bg-white text-gray-900 border border-blue-100"
@@ -555,9 +690,9 @@ const WhatsAppSalesforceApp: React.FC = () => {
 
               {/* Templates (se ativo) */}
               {showTemplates && (
-                <div className="bg-white border-t border-blue-100 p-4">
+                <div className="bg-white border-t border-blue-100 p-3 md:p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Templates</h3>
+                    <h3 className="font-semibold text-gray-900 text-sm md:text-base">Templates</h3>
                     <button
                       onClick={() => setShowTemplates(false)}
                       className="text-gray-500 hover:text-gray-700"
@@ -565,7 +700,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {messageTemplates.map((template) => (
                       <button
                         key={template.id}
@@ -585,25 +720,45 @@ const WhatsAppSalesforceApp: React.FC = () => {
               )}
 
               {/* Input de Mensagem */}
-              <div className="bg-white border-t border-blue-100 p-4">
-                <div className="flex items-end space-x-3">
-                  <button
-                    onClick={() => setShowTemplates(!showTemplates)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      showTemplates
-                        ? "bg-gray-500 text-white"
-                        : "text-gray-500 hover:text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    <FileText className="w-5 h-5" />
-                  </button>
+              <div className="bg-white border-t border-blue-100 p-3 md:p-4">
+                <div className="flex items-end space-x-2 md:space-x-3">
+                  {/* Dropdown de Mídia */}
+                  <div className="relative" ref={mediaDropdownRef}>
+                    <button
+                      onClick={() => setShowMediaDropdown(!showMediaDropdown)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        showMediaDropdown
+                          ? "bg-blue-500 text-white"
+                          : "text-gray-500 hover:text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    {showMediaDropdown && (
+                      <div className="absolute bottom-full left-0 mb-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        {mediaOptions.map((option) => (
+                          <button
+                            key={option.id}
+                            onClick={() => handleMediaAction(option.action)}
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg transition-colors"
+                          >
+                            <span className="text-blue-500">{option.icon}</span>
+                            <span className="text-sm font-medium">{option.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex-1">
                     <textarea
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder="Digite sua mensagem..."
                       rows={1}
-                      className="w-full text-black px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      className="w-full text-black px-3 md:px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
                       onKeyPress={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
@@ -615,21 +770,21 @@ const WhatsAppSalesforceApp: React.FC = () => {
                   <button
                     onClick={sendMessage}
                     disabled={!newMessage.trim() || isLoading}
-                    className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 md:p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    <Send className="w-5 h-5" />
+                    <Send className="w-4 h-4 md:w-5 md:h-5" />
                   </button>
                 </div>
               </div>
             </div>
           ) : (
             <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-blue-25 to-gray-25">
-              <div className="text-center">
-                <MessageSquare className="w-16 h-16 text-blue-300 mx-auto mb-4" />
+              <div className="text-center p-4">
+                <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-blue-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Selecione uma conversa
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm md:text-base">
                   Escolha uma conversa para começar a responder mensagens
                 </p>
               </div>
@@ -640,39 +795,26 @@ const WhatsAppSalesforceApp: React.FC = () => {
         // Salesforce Iframe
         <div className="flex-1 bg-white">
           <div className="h-full flex flex-col">
-            <div className="bg-gray-50 border-b border-gray-200 p-4">
+            <div className="bg-gray-50 border-b border-gray-200 p-3 md:p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-800">
+                <h2 className="text-base md:text-lg font-semibold text-gray-800">
                   Salesforce CRM
                 </h2>
                 <button
                   onClick={() => setActiveView("chat")}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="px-3 md:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
                 >
                   Voltar ao Chat
                 </button>
               </div>
             </div>
-            <div className="flex-1 bg-gray-100 flex items-center justify-center">
-              <div className="text-center bg-white p-8 rounded-lg shadow-md">
-                <ExternalLink className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Salesforce Integration
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Aqui seria carregado o Salesforce via iframe
-                </p>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <p className="text-sm text-gray-800">
-                    Na implementação real, este espaço seria ocupado por:
-                    <br />
-                    • Iframe do Salesforce
-                    <br />
-                    • Integração com APIs do SF
-                    <br />• Navegação automática para leads específicos
-                  </p>
-                </div>
-              </div>
+            <div className="flex-1">
+              <iframe
+                src="https://seminovoslocaliza.my.salesforce.com/"
+                className="w-full h-full border-0"
+                title="Salesforce CRM"
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+              />
             </div>
           </div>
         </div>
