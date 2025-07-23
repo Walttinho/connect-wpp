@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  MessageCircle, 
-  Send, 
-  Clock, 
-  Check, 
-  CheckCheck, 
-  Phone, 
-  User, 
-  FileText, 
-  MessageSquare, 
-  ExternalLink, 
-  Search, 
-  Settings, 
-  X 
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  MessageCircle,
+  Send,
+  Clock,
+  Check,
+  CheckCheck,
+  Phone,
+  User,
+  FileText,
+  MessageSquare,
+  ExternalLink,
+  Search,
+  Settings,
+  X,
+} from "lucide-react";
 
 // Types
 interface Contact {
@@ -23,7 +23,7 @@ interface Contact {
   phone: string;
   avatar: string;
   leadId: string;
-  status: 'hot' | 'warm' | 'cold';
+  status: "hot" | "warm" | "cold";
 }
 
 interface Message {
@@ -31,7 +31,7 @@ interface Message {
   text: string;
   timestamp: Date;
   sent: boolean;
-  status: 'sent' | 'delivered' | 'read';
+  status: "sent" | "delivered" | "read";
 }
 
 interface Chat {
@@ -40,7 +40,7 @@ interface Chat {
   lastMessage: string;
   timestamp: Date;
   unread: number;
-  status: 'sent' | 'delivered' | 'read';
+  status: "sent" | "delivered" | "read";
   messages: Message[];
 }
 
@@ -52,10 +52,10 @@ interface MessageTemplate {
 }
 
 const WhatsAppSalesforceApp: React.FC = () => {
-  const [activeView, setActiveView] = useState<'chat' | 'salesforce'>('chat');
+  const [activeView, setActiveView] = useState<"chat" | "salesforce">("chat");
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
-  const [newMessage, setNewMessage] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [showTemplates, setShowTemplates] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -63,150 +63,154 @@ const WhatsAppSalesforceApp: React.FC = () => {
   // Mock data para conversas do WhatsApp
   const [chats, setChats] = useState<Chat[]>([
     {
-      id: '1',
+      id: "1",
       contact: {
-        name: 'Maria Silva',
-        phone: '+55 11 99999-0001',
-        avatar: 'MS',
-        leadId: 'SF001',
-        status: 'hot'
+        name: "Maria Silva",
+        phone: "+55 11 99999-0001",
+        avatar: "MS",
+        leadId: "SF001",
+        status: "hot",
       },
-      lastMessage: 'Gostaria de saber mais sobre o produto',
+      lastMessage: "Gostaria de saber mais sobre o produto",
       timestamp: new Date(Date.now() - 300000),
       unread: 2,
-      status: 'delivered',
+      status: "delivered",
       messages: [
         {
-          id: 'm1',
-          text: 'Olá, vi o anúncio no Facebook',
+          id: "m1",
+          text: "Olá, vi o anúncio no Facebook",
           timestamp: new Date(Date.now() - 1800000),
           sent: false,
-          status: 'read'
+          status: "read",
         },
         {
-          id: 'm2',
-          text: 'Olá Maria! Obrigado pelo interesse. Em que posso ajudá-la?',
+          id: "m2",
+          text: "Olá Maria! Obrigado pelo interesse. Em que posso ajudá-la?",
           timestamp: new Date(Date.now() - 1500000),
           sent: true,
-          status: 'read'
+          status: "read",
         },
         {
-          id: 'm3',
-          text: 'Gostaria de saber mais sobre o produto',
+          id: "m3",
+          text: "Gostaria de saber mais sobre o produto",
           timestamp: new Date(Date.now() - 300000),
           sent: false,
-          status: 'delivered'
-        }
-      ]
+          status: "delivered",
+        },
+      ],
     },
     {
-      id: '2',
+      id: "2",
       contact: {
-        name: 'João Santos',
-        phone: '+55 11 99999-0002',
-        avatar: 'JS',
-        leadId: 'SF002',
-        status: 'warm'
+        name: "João Santos",
+        phone: "+55 11 99999-0002",
+        avatar: "JS",
+        leadId: "SF002",
+        status: "warm",
       },
-      lastMessage: 'Perfeito! Quando podemos agendar?',
+      lastMessage: "Perfeito! Quando podemos agendar?",
       timestamp: new Date(Date.now() - 600000),
       unread: 0,
-      status: 'read',
+      status: "read",
       messages: [
         {
-          id: 'm4',
-          text: 'Bom dia! Tenho interesse no serviço',
+          id: "m4",
+          text: "Bom dia! Tenho interesse no serviço",
           timestamp: new Date(Date.now() - 3600000),
           sent: false,
-          status: 'read'
+          status: "read",
         },
         {
-          id: 'm5',
-          text: 'Bom dia João! Vamos agendar uma demonstração?',
+          id: "m5",
+          text: "Bom dia João! Vamos agendar uma demonstração?",
           timestamp: new Date(Date.now() - 3300000),
           sent: true,
-          status: 'read'
+          status: "read",
         },
         {
-          id: 'm6',
-          text: 'Perfeito! Quando podemos agendar?',
+          id: "m6",
+          text: "Perfeito! Quando podemos agendar?",
           timestamp: new Date(Date.now() - 600000),
           sent: false,
-          status: 'read'
-        }
-      ]
+          status: "read",
+        },
+      ],
     },
     {
-      id: '3',
+      id: "3",
       contact: {
-        name: 'Ana Costa',
-        phone: '+55 11 99999-0003',
-        avatar: 'AC',
-        leadId: 'SF003',
-        status: 'cold'
+        name: "Ana Costa",
+        phone: "+55 11 99999-0003",
+        avatar: "AC",
+        leadId: "SF003",
+        status: "cold",
       },
-      lastMessage: 'Obrigada pelas informações!',
+      lastMessage: "Obrigada pelas informações!",
       timestamp: new Date(Date.now() - 3600000),
       unread: 0,
-      status: 'read',
+      status: "read",
       messages: [
         {
-          id: 'm7',
-          text: 'Olá, preciso de mais informações',
+          id: "m7",
+          text: "Olá, preciso de mais informações",
           timestamp: new Date(Date.now() - 5400000),
           sent: false,
-          status: 'read'
+          status: "read",
         },
         {
-          id: 'm8',
-          text: 'Claro! Segue nossa apresentação em anexo',
+          id: "m8",
+          text: "Claro! Segue nossa apresentação em anexo",
           timestamp: new Date(Date.now() - 4800000),
           sent: true,
-          status: 'read'
+          status: "read",
         },
         {
-          id: 'm9',
-          text: 'Obrigada pelas informações!',
+          id: "m9",
+          text: "Obrigada pelas informações!",
           timestamp: new Date(Date.now() - 3600000),
           sent: false,
-          status: 'read'
-        }
-      ]
-    }
+          status: "read",
+        },
+      ],
+    },
   ]);
 
   // Templates de mensagem
   const messageTemplates: MessageTemplate[] = [
     {
-      id: 't1',
-      name: 'Boas-vindas',
-      content: 'Olá {{name}}! Obrigado pelo seu interesse. Como posso ajudá-lo hoje?',
-      category: 'inicial'
+      id: "t1",
+      name: "Boas-vindas",
+      content:
+        "Olá {{name}}! Obrigado pelo seu interesse. Como posso ajudá-lo hoje?",
+      category: "inicial",
     },
     {
-      id: 't2',
-      name: 'Proposta Comercial',
-      content: 'Olá {{name}}, preparei uma proposta especial para você. Quando podemos conversar?',
-      category: 'vendas'
+      id: "t2",
+      name: "Proposta Comercial",
+      content:
+        "Olá {{name}}, preparei uma proposta especial para você. Quando podemos conversar?",
+      category: "vendas",
     },
     {
-      id: 't3',
-      name: 'Follow-up',
-      content: 'Oi {{name}}, como está? Gostaria de saber se ainda tem interesse em nosso produto.',
-      category: 'follow-up'
+      id: "t3",
+      name: "Follow-up",
+      content:
+        "Oi {{name}}, como está? Gostaria de saber se ainda tem interesse em nosso produto.",
+      category: "follow-up",
     },
     {
-      id: 't4',
-      name: 'Agendamento',
-      content: 'Perfeito {{name}}! Vou agendar nossa reunião. Qual horário é melhor para você?',
-      category: 'agendamento'
-    }
+      id: "t4",
+      name: "Agendamento",
+      content:
+        "Perfeito {{name}}! Vou agendar nossa reunião. Qual horário é melhor para você?",
+      category: "agendamento",
+    },
   ];
 
   const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('pt-BR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -218,22 +222,22 @@ const WhatsAppSalesforceApp: React.FC = () => {
     if (date.toDateString() === today.toDateString()) {
       return formatTime(date);
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Ontem';
+      return "Ontem";
     } else {
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit'
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
       });
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sent':
+      case "sent":
         return <Check className="w-4 h-4 text-gray-400" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCheck className="w-4 h-4 text-gray-400" />;
-      case 'read':
+      case "read":
         return <CheckCheck className="w-4 h-4 text-blue-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-400" />;
@@ -242,14 +246,14 @@ const WhatsAppSalesforceApp: React.FC = () => {
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'hot':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'warm':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'cold':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case "hot":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "warm":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      case "cold":
+        return "bg-blue-100 text-blue-800 border-blue-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -257,41 +261,41 @@ const WhatsAppSalesforceApp: React.FC = () => {
     if (!newMessage.trim() || !selectedChat) return;
 
     setIsLoading(true);
-    
+
     // Simular envio de mensagem
     const newMsg: Message = {
       id: `m${Date.now()}`,
       text: newMessage,
       timestamp: new Date(),
       sent: true,
-      status: 'sent'
+      status: "sent",
     };
 
-    setChats(prevChats => 
-      prevChats.map(chat => 
-        chat.id === selectedChat.id 
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === selectedChat.id
           ? {
               ...chat,
               messages: [...chat.messages, newMsg],
               lastMessage: newMessage,
-              timestamp: new Date()
+              timestamp: new Date(),
             }
           : chat
       )
     );
 
-    setNewMessage('');
-    
+    setNewMessage("");
+
     // Simular mudança de status da mensagem
     setTimeout(() => {
-      setChats(prevChats =>
-        prevChats.map(chat =>
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
           chat.id === selectedChat.id
             ? {
                 ...chat,
-                messages: chat.messages.map(msg =>
-                  msg.id === newMsg.id ? { ...msg, status: 'delivered' } : msg
-                )
+                messages: chat.messages.map((msg) =>
+                  msg.id === newMsg.id ? { ...msg, status: "delivered" } : msg
+                ),
               }
             : chat
         )
@@ -299,14 +303,14 @@ const WhatsAppSalesforceApp: React.FC = () => {
     }, 1000);
 
     setTimeout(() => {
-      setChats(prevChats =>
-        prevChats.map(chat =>
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
           chat.id === selectedChat.id
             ? {
                 ...chat,
-                messages: chat.messages.map(msg =>
-                  msg.id === newMsg.id ? { ...msg, status: 'read' } : msg
-                )
+                messages: chat.messages.map((msg) =>
+                  msg.id === newMsg.id ? { ...msg, status: "read" } : msg
+                ),
               }
             : chat
         )
@@ -316,9 +320,12 @@ const WhatsAppSalesforceApp: React.FC = () => {
     setIsLoading(false);
   };
 
-  const useTemplate = (template: MessageTemplate): void => {
+  const applyTemplate = (template: MessageTemplate): void => {
     if (selectedChat) {
-      const personalizedMessage = template.content.replace('{{name}}', selectedChat.contact.name);
+      const personalizedMessage = template.content.replace(
+        "{{name}}",
+        selectedChat.contact.name
+      );
       setNewMessage(personalizedMessage);
       setShowTemplates(false);
     }
@@ -326,20 +333,21 @@ const WhatsAppSalesforceApp: React.FC = () => {
 
   const openSalesforceContact = (leadId: string): void => {
     // Simular abertura do Salesforce com o lead específico
-    setActiveView('salesforce');
+    setActiveView("salesforce");
     console.log(`Abrindo Salesforce para lead: ${leadId}`);
     // Na implementação real, isso carregaria o Salesforce com o lead específico
   };
 
-  const filteredChats = chats.filter(chat =>
-    chat.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    chat.contact.phone.includes(searchTerm) ||
-    chat.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredChats = chats.filter(
+    (chat) =>
+      chat.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chat.contact.phone.includes(searchTerm) ||
+      chat.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChat?.messages]);
 
@@ -351,22 +359,22 @@ const WhatsAppSalesforceApp: React.FC = () => {
           <div className="flex items-center space-x-4">
             <div className="flex bg-blue-100 rounded-lg p-1">
               <button
-                onClick={() => setActiveView('chat')}
+                onClick={() => setActiveView("chat")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeView === 'chat'
-                    ? 'bg-blue-500 text-white shadow-sm'
-                    : 'text-blue-600 hover:bg-blue-50'
+                  activeView === "chat"
+                    ? "bg-blue-500 text-white shadow-sm"
+                    : "text-blue-600 hover:bg-blue-50"
                 }`}
               >
                 <MessageCircle className="w-4 h-4 inline mr-2" />
                 WhatsApp
               </button>
               <button
-                onClick={() => setActiveView('salesforce')}
+                onClick={() => setActiveView("salesforce")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeView === 'salesforce'
-                    ? 'bg-gray-500 text-white shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeView === "salesforce"
+                    ? "bg-gray-500 text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <ExternalLink className="w-4 h-4 inline mr-2" />
@@ -382,7 +390,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
         </div>
       </div>
 
-      {activeView === 'chat' ? (
+      {activeView === "chat" ? (
         <div className="flex flex-1 overflow-hidden">
           {/* Lista de Conversas */}
           <div className="w-80 bg-white border-r border-blue-100 flex flex-col">
@@ -407,7 +415,9 @@ const WhatsAppSalesforceApp: React.FC = () => {
                   key={chat.id}
                   onClick={() => setSelectedChat(chat)}
                   className={`p-4 border-b border-blue-50 cursor-pointer transition-colors hover:bg-blue-50 ${
-                    selectedChat?.id === chat.id ? 'bg-blue-100 border-l-4 border-l-blue-500' : ''
+                    selectedChat?.id === chat.id
+                      ? "bg-blue-100 border-l-4 border-l-blue-500"
+                      : ""
                   }`}
                 >
                   <div className="flex items-start space-x-3">
@@ -420,7 +430,11 @@ const WhatsAppSalesforceApp: React.FC = () => {
                           <h3 className="font-semibold text-gray-900 truncate">
                             {chat.contact.name}
                           </h3>
-                          <span className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(chat.contact.status)}`}>
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(
+                              chat.contact.status
+                            )}`}
+                          >
                             {chat.contact.status}
                           </span>
                         </div>
@@ -481,13 +495,19 @@ const WhatsAppSalesforceApp: React.FC = () => {
                         {selectedChat.contact.leadId}
                       </p>
                     </div>
-                    <span className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(selectedChat.contact.status)}`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(
+                        selectedChat.contact.status
+                      )}`}
+                    >
                       {selectedChat.contact.status}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => openSalesforceContact(selectedChat.contact.leadId)}
+                      onClick={() =>
+                        openSalesforceContact(selectedChat.contact.leadId)
+                      }
                       className="flex items-center space-x-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                     >
                       <User className="w-4 h-4" />
@@ -505,19 +525,23 @@ const WhatsAppSalesforceApp: React.FC = () => {
                 {selectedChat.messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${message.sent ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${
+                      message.sent ? "justify-end" : "justify-start"
+                    }`}
                   >
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         message.sent
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-900 border border-blue-100'
+                          ? "bg-blue-500 text-white"
+                          : "bg-white text-gray-900 border border-blue-100"
                       }`}
                     >
                       <p className="text-sm">{message.text}</p>
-                      <div className={`flex items-center justify-end space-x-1 mt-1 ${
-                        message.sent ? 'text-blue-100' : 'text-gray-500'
-                      }`}>
+                      <div
+                        className={`flex items-center justify-end space-x-1 mt-1 ${
+                          message.sent ? "text-blue-100" : "text-gray-500"
+                        }`}
+                      >
                         <span className="text-xs">
                           {formatTime(message.timestamp)}
                         </span>
@@ -545,7 +569,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                     {messageTemplates.map((template) => (
                       <button
                         key={template.id}
-                        onClick={() => useTemplate(template)}
+                        onClick={() => applyTemplate(template)}
                         className="p-3 text-left bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"
                       >
                         <p className="font-medium text-sm text-blue-900">
@@ -567,8 +591,8 @@ const WhatsAppSalesforceApp: React.FC = () => {
                     onClick={() => setShowTemplates(!showTemplates)}
                     className={`p-2 rounded-lg transition-colors ${
                       showTemplates
-                        ? 'bg-gray-500 text-white'
-                        : 'text-gray-500 hover:text-gray-600 hover:bg-gray-50'
+                        ? "bg-gray-500 text-white"
+                        : "text-gray-500 hover:text-gray-600 hover:bg-gray-50"
                     }`}
                   >
                     <FileText className="w-5 h-5" />
@@ -581,7 +605,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                       rows={1}
                       className="w-full text-black px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                        if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
                           sendMessage();
                         }
@@ -622,7 +646,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                   Salesforce CRM
                 </h2>
                 <button
-                  onClick={() => setActiveView('chat')}
+                  onClick={() => setActiveView("chat")}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   Voltar ao Chat
@@ -640,10 +664,12 @@ const WhatsAppSalesforceApp: React.FC = () => {
                 </p>
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <p className="text-sm text-gray-800">
-                    Na implementação real, este espaço seria ocupado por:<br/>
-                    • Iframe do Salesforce<br/>
-                    • Integração com APIs do SF<br/>
-                    • Navegação automática para leads específicos
+                    Na implementação real, este espaço seria ocupado por:
+                    <br />
+                    • Iframe do Salesforce
+                    <br />
+                    • Integração com APIs do SF
+                    <br />• Navegação automática para leads específicos
                   </p>
                 </div>
               </div>
