@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 
+type ModalType = 'camera' | 'video' | 'audio' | 'file' | null;
+
 export const useMediaActions = () => {
   const [showMediaDropdown, setShowMediaDropdown] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
   const mediaDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleMediaAction = (action: string, onTemplateToggle?: () => void) => {
@@ -10,23 +13,51 @@ export const useMediaActions = () => {
         onTemplateToggle?.();
         break;
       case "camera":
-        console.log("Abrir câmera");
-        // Implementar funcionalidade da câmera
+        setActiveModal('camera');
         break;
       case "file":
-        console.log("Selecionar arquivo");
-        // Implementar seleção de arquivo
+        setActiveModal('file');
         break;
       case "video":
-        console.log("Selecionar vídeo");
-        // Implementar seleção de vídeo
+        setActiveModal('video');
         break;
       case "audio":
-        console.log("Gravar áudio");
-        // Implementar gravação de áudio
+        setActiveModal('audio');
         break;
+      default:
+        console.log(`Ação não implementada: ${action}`);
     }
     setShowMediaDropdown(false);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+  };
+
+  const openModal = (modalType: ModalType) => {
+    setActiveModal(modalType);
+  };
+
+  // Callbacks para quando as ações são concluídas
+  const handleCameraCapture = (imageData: string) => {
+    console.log('Foto capturada:', imageData);
+    // TODO: processar a imagem capturada
+    
+  };
+
+  const handleVideoRecording = (videoBlob: Blob, videoUrl: string) => {
+    console.log('Vídeo gravado:', { videoBlob, videoUrl });
+    // TODO: processar o vídeo gravado
+  };
+
+  const handleAudioRecording = (audioBlob: Blob, audioUrl: string) => {
+    console.log('Áudio gravado:', { audioBlob, audioUrl });
+    // TODO: processar o áudio gravado
+  };
+
+  const handleFilesUpload = (files: File[]) => {
+    console.log('Arquivos selecionados:', files);
+    // TODO: processar os arquivos selecionados
   };
 
   // Fechar dropdown ao clicar fora
@@ -47,9 +78,23 @@ export const useMediaActions = () => {
   }, []);
 
   return {
+    // Estados
     showMediaDropdown,
     setShowMediaDropdown,
+    activeModal,
+    
+    // Refs
     mediaDropdownRef,
+    
+    // Funções
     handleMediaAction,
+    closeModal,
+    openModal,
+    
+    // Callbacks
+    handleCameraCapture,
+    handleVideoRecording,
+    handleAudioRecording,
+    handleFilesUpload,
   };
 };
