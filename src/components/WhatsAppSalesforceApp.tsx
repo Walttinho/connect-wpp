@@ -23,6 +23,7 @@ import {
   Menu,
   ArrowLeft,
 } from "lucide-react";
+import Image from "next/image";
 
 // Types
 interface Contact {
@@ -457,7 +458,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
             >
               <Menu className="w-5 h-5" />
             </button>
-            
+
             <div className="flex bg-blue-100 rounded-lg p-1">
               <button
                 onClick={() => setActiveView("chat")}
@@ -502,13 +503,15 @@ const WhatsAppSalesforceApp: React.FC = () => {
           )}
 
           {/* Lista de Conversas */}
-          <div className={`
-            ${showSidebar ? 'translate-x-0' : '-translate-x-full'}
+          <div
+            className={`
+            ${showSidebar ? "translate-x-0" : "-translate-x-full"}
             md:translate-x-0 transition-transform duration-300 ease-in-out
             fixed md:relative z-50 md:z-0
             w-80 md:w-80 lg:w-96 bg-white border-r border-blue-100 flex flex-col
             h-full
-          `}>
+          `}
+          >
             {/* Header da Sidebar Mobile */}
             <div className="md:hidden flex items-center justify-between p-4 border-b border-blue-100">
               <h2 className="font-semibold text-gray-900">Conversas</h2>
@@ -692,7 +695,9 @@ const WhatsAppSalesforceApp: React.FC = () => {
               {showTemplates && (
                 <div className="bg-white border-t border-blue-100 p-3 md:p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900 text-sm md:text-base">Templates</h3>
+                    <h3 className="font-semibold text-gray-900 text-sm md:text-base">
+                      Templates
+                    </h3>
                     <button
                       onClick={() => setShowTemplates(false)}
                       className="text-gray-500 hover:text-gray-700"
@@ -734,7 +739,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
                     >
                       <Plus className="w-5 h-5" />
                     </button>
-                    
+
                     {/* Dropdown Menu */}
                     {showMediaDropdown && (
                       <div className="absolute bottom-full left-0 mb-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
@@ -745,7 +750,9 @@ const WhatsAppSalesforceApp: React.FC = () => {
                             className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg transition-colors"
                           >
                             <span className="text-blue-500">{option.icon}</span>
-                            <span className="text-sm font-medium">{option.name}</span>
+                            <span className="text-sm font-medium">
+                              {option.name}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -808,13 +815,33 @@ const WhatsAppSalesforceApp: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="flex-1">
-              <iframe
-                src="https://seminovoslocaliza.my.salesforce.com/"
-                className="w-full h-full border-0"
-                title="Salesforce CRM"
-                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+            <div className="flex-1 bg-gray-100 flex items-center justify-center relative">
+              <Image
+                src="/Captura de tela 2025-07-23 230045.png"
+                alt="Captura de tela"
+                fill
+                style={{ objectFit: "contain" }}
               />
+
+              {/* <div className="text-center bg-white p-8 rounded-lg shadow-md">
+                <ExternalLink className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Salesforce Integration
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Aqui seria carregado o Salesforce via iframe
+                </p>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <p className="text-sm text-gray-800">
+                    Na implementação real, este espaço seria ocupado por:
+                    <br />
+                    • Iframe do Salesforce
+                    <br />
+                    • Integração com APIs do SF
+                    <br />• Navegação automática para leads específicos
+                  </p>
+                </div>
+              </div> */}
             </div>
           </div>
         </div>
