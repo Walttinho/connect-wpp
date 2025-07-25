@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Camera, RotateCcw } from 'lucide-react';
-import { Modal } from '../../common/Modal';
+import React, { useRef, useEffect, useState } from "react";
+import { Camera, RotateCcw } from "lucide-react";
+import { Modal } from "../../common/Modal";
 
 interface CameraModalProps {
   isOpen: boolean;
@@ -8,10 +8,10 @@ interface CameraModalProps {
   onCapture?: (imageData: string) => void;
 }
 
-export const CameraModal: React.FC<CameraModalProps> = ({ 
-  isOpen, 
+export const CameraModal: React.FC<CameraModalProps> = ({
+  isOpen,
   onClose,
-  onCapture 
+  onCapture,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,23 +35,25 @@ export const CameraModal: React.FC<CameraModalProps> = ({
   const startCamera = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
           width: { ideal: 640 },
           height: { ideal: 480 },
-          facingMode: 'user'
-        } 
+          facingMode: "user",
+        },
       });
-      
+
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
     } catch (error) {
-      console.error('Erro ao acessar câmera:', error);
-      setError('Erro ao acessar a câmera. Verifique as permissões do navegador.');
+      console.error("Erro ao acessar câmera:", error);
+      setError(
+        "Erro ao acessar a câmera. Verifique as permissões do navegador."
+      );
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
 
   const stopCamera = () => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
     setCapturedImage(null);
@@ -70,14 +72,14 @@ export const CameraModal: React.FC<CameraModalProps> = ({
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
       const video = videoRef.current;
-      const context = canvas.getContext('2d');
-      
+      const context = canvas.getContext("2d");
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      
+
       if (context) {
         context.drawImage(video, 0, 0);
-        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+        const imageData = canvas.toDataURL("image/jpeg", 0.8);
         setCapturedImage(imageData);
       }
     }
@@ -89,15 +91,13 @@ export const CameraModal: React.FC<CameraModalProps> = ({
 
   const savePhoto = () => {
     if (capturedImage) {
-      // Callback para componente pai
       onCapture?.(capturedImage);
-      
-      // Download da imagem
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.download = `foto_${new Date().getTime()}.jpg`;
       link.href = capturedImage;
       link.click();
-      
+
       onClose();
     }
   };
@@ -130,7 +130,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
               autoPlay
               playsInline
               className="w-full rounded-lg bg-black"
-              style={{ maxHeight: '300px', objectFit: 'cover' }}
+              style={{ maxHeight: "300px", objectFit: "cover" }}
             />
             <div className="flex justify-center space-x-4">
               <button
@@ -143,32 +143,34 @@ export const CameraModal: React.FC<CameraModalProps> = ({
               </button>
             </div>
           </>
-        ) : capturedImage && (
-          <>
-            <img 
-              src={capturedImage} 
-              alt="Foto capturada" 
-              className="w-full rounded-lg shadow-md" 
-            />
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={retakePhoto}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-              >
-                <RotateCcw size={20} />
-                <span>Refazer</span>
-              </button>
-              <button
-                onClick={savePhoto}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
-              >
-                Salvar Foto
-              </button>
-            </div>
-          </>
+        ) : (
+          capturedImage && (
+            <>
+              <img
+                src={capturedImage}
+                alt="Foto capturada"
+                className="w-full rounded-lg shadow-md"
+              />
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={retakePhoto}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                >
+                  <RotateCcw size={20} />
+                  <span>Refazer</span>
+                </button>
+                <button
+                  onClick={savePhoto}
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
+                >
+                  Salvar Foto
+                </button>
+              </div>
+            </>
+          )
         )}
-        
-        <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+        <canvas ref={canvasRef} style={{ display: "none" }} />
       </div>
     </Modal>
   );

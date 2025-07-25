@@ -1,25 +1,32 @@
 //src/components/ChatArea/MessageInput.tsx
-import React, { useState } from 'react';
-import { Send } from 'lucide-react';
-import { MediaDropdown } from './MediaDropdown';
-import { CameraModal } from './modals/CameraModal';
-import { VideoModal } from './modals/VideoModal';
-import { AudioModal } from './modals/AudioModal';
-import { FileModal } from './modals/FileModal';
-import { useMediaActions } from '../../hooks/useMediaActions';
+import React, { useEffect, useState } from "react";
+import { Send } from "lucide-react";
+import { MediaDropdown } from "./MediaDropdown";
+import { CameraModal } from "./modals/CameraModal";
+import { VideoModal } from "./modals/VideoModal";
+import { AudioModal } from "./modals/AudioModal";
+import { FileModal } from "./modals/FileModal";
+import { useMediaActions } from "../../hooks/useMediaActions";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
   onTemplateToggle: () => void;
   isLoading: boolean;
+  defaultMessage?: string;
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({
   onSendMessage,
   onTemplateToggle,
   isLoading,
+  defaultMessage = "",
 }) => {
-  const [newMessage, setNewMessage] = useState<string>("");
+  const [newMessage, setNewMessage] = useState<string>(defaultMessage);
+
+  useEffect(() => {
+    setNewMessage(defaultMessage);
+  }, [defaultMessage]);
+
   const {
     showMediaDropdown,
     setShowMediaDropdown,
@@ -53,8 +60,12 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           <MediaDropdown
             showMediaDropdown={showMediaDropdown}
             onToggle={() => setShowMediaDropdown(!showMediaDropdown)}
-            onMediaAction={(action) => handleMediaAction(action, onTemplateToggle)}
-            mediaDropdownRef={mediaDropdownRef as React.RefObject<HTMLDivElement>}
+            onMediaAction={(action) =>
+              handleMediaAction(action, onTemplateToggle)
+            }
+            mediaDropdownRef={
+              mediaDropdownRef as React.RefObject<HTMLDivElement>
+            }
           />
 
           <div className="flex-1">
@@ -67,7 +78,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               onKeyPress={handleKeyPress}
             />
           </div>
-          
+
           <button
             onClick={handleSend}
             disabled={!newMessage.trim() || isLoading}
@@ -80,25 +91,25 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
       {/* Modais de Mídia */}
       <CameraModal
-        isOpen={activeModal === 'camera'}
+        isOpen={activeModal === "camera"}
         onClose={closeModal}
         onCapture={handleCameraCapture}
       />
-      
+
       <VideoModal
-        isOpen={activeModal === 'video'}
+        isOpen={activeModal === "video"}
         onClose={closeModal}
         onRecordingComplete={handleVideoRecording}
       />
-      
+
       <AudioModal
-        isOpen={activeModal === 'audio'}
+        isOpen={activeModal === "audio"}
         onClose={closeModal}
         onRecordingComplete={handleAudioRecording}
       />
-      
+
       <FileModal
-        isOpen={activeModal === 'file'}
+        isOpen={activeModal === "file"}
         onClose={closeModal}
         onFilesUpload={handleFilesUpload}
         acceptedTypes="*/*"

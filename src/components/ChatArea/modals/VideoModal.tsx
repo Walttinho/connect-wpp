@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Video, Play, Pause, Square, RotateCcw } from 'lucide-react';
-import { Modal } from '../../common/Modal';
+import React, { useRef, useEffect, useState } from "react";
+import { Video, Play, Pause, Square, RotateCcw } from "lucide-react";
+import { Modal } from "../../common/Modal";
 
-type RecordingState = 'idle' | 'recording' | 'paused' | 'stopped';
+type RecordingState = "idle" | "recording" | "paused" | "stopped";
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -10,15 +10,15 @@ interface VideoModalProps {
   onRecordingComplete?: (videoBlob: Blob, videoUrl: string) => void;
 }
 
-export const VideoModal: React.FC<VideoModalProps> = ({ 
-  isOpen, 
+export const VideoModal: React.FC<VideoModalProps> = ({
+  isOpen,
   onClose,
-  onRecordingComplete 
+  onRecordingComplete,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [recordingState, setRecordingState] = useState<RecordingState>('idle');
+  const [recordingState, setRecordingState] = useState<RecordingState>("idle");
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -27,9 +27,9 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (recordingState === 'recording') {
+    if (recordingState === "recording") {
       interval = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -50,24 +50,26 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   const startCamera = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 640 },
           height: { ideal: 480 },
-          facingMode: 'user'
-        }, 
-        audio: true 
+          facingMode: "user",
+        },
+        audio: true,
       });
-      
+
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
     } catch (error) {
-      console.error('Erro ao acessar câmera:', error);
-      setError('Erro ao acessar a câmera/microfone. Verifique as permissões do navegador.');
+      console.error("Erro ao acessar câmera:", error);
+      setError(
+        "Erro ao acessar a câmera/microfone. Verifique as permissões do navegador."
+      );
     } finally {
       setLoading(false);
     }
@@ -75,13 +77,13 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 
   const stopCamera = () => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
     }
-    setRecordingState('idle');
+    setRecordingState("idle");
     setRecordingTime(0);
     setRecordedVideoUrl(null);
     setRecordedChunks([]);
@@ -90,15 +92,15 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 
   const startRecording = () => {
     if (!stream) return;
-    
+
     try {
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=vp9'
+        mimeType: "video/webm;codecs=vp9",
       });
-      
+
       mediaRecorderRef.current = mediaRecorder;
       const chunks: Blob[] = [];
-      
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunks.push(event.data);
@@ -106,48 +108,47 @@ export const VideoModal: React.FC<VideoModalProps> = ({
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
+        const blob = new Blob(chunks, { type: "video/webm" });
         const url = URL.createObjectURL(blob);
         setRecordedVideoUrl(url);
         setRecordedChunks(chunks);
-        
-        // Callback para componente pai
+
         onRecordingComplete?.(blob, url);
       };
 
-      mediaRecorder.start(1000); // Coleta dados a cada segundo
-      setRecordingState('recording');
+      mediaRecorder.start(1000);
+      setRecordingState("recording");
       setRecordingTime(0);
     } catch (error) {
-      console.error('Erro ao iniciar gravação:', error);
-      setError('Erro ao iniciar gravação. Tente novamente.');
+      console.error("Erro ao iniciar gravação:", error);
+      setError("Erro ao iniciar gravação. Tente novamente.");
     }
   };
 
   const pauseRecording = () => {
-    if (mediaRecorderRef.current && recordingState === 'recording') {
+    if (mediaRecorderRef.current && recordingState === "recording") {
       mediaRecorderRef.current.pause();
-      setRecordingState('paused');
+      setRecordingState("paused");
     }
   };
 
   const resumeRecording = () => {
-    if (mediaRecorderRef.current && recordingState === 'paused') {
+    if (mediaRecorderRef.current && recordingState === "paused") {
       mediaRecorderRef.current.resume();
-      setRecordingState('recording');
+      setRecordingState("recording");
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-      setRecordingState('stopped');
+      setRecordingState("stopped");
     }
   };
 
   const saveVideo = () => {
     if (recordedVideoUrl) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = `video_${new Date().getTime()}.webm`;
       link.href = recordedVideoUrl;
       link.click();
@@ -160,7 +161,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
       URL.revokeObjectURL(recordedVideoUrl);
     }
     setRecordedVideoUrl(null);
-    setRecordingState('idle');
+    setRecordingState("idle");
     setRecordingTime(0);
     setRecordedChunks([]);
   };
@@ -168,7 +169,9 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleClose = () => {
@@ -177,7 +180,12 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Gravação de Vídeo" size="lg">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Gravação de Vídeo"
+      size="lg"
+    >
       <div className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -200,20 +208,20 @@ export const VideoModal: React.FC<VideoModalProps> = ({
               playsInline
               muted
               className="w-full rounded-lg bg-black"
-              style={{ maxHeight: '300px', objectFit: 'cover' }}
+              style={{ maxHeight: "300px", objectFit: "cover" }}
             />
-            
-            {recordingState !== 'idle' && (
+
+            {recordingState !== "idle" && (
               <div className="text-center py-2">
                 <div className="text-xl font-mono text-gray-800">
                   ⏱️ {formatTime(recordingTime)}
                 </div>
-                {recordingState === 'recording' && (
+                {recordingState === "recording" && (
                   <div className="text-red-500 font-semibold mt-1">
                     🔴 Gravando
                   </div>
                 )}
-                {recordingState === 'paused' && (
+                {recordingState === "paused" && (
                   <div className="text-yellow-500 font-semibold mt-1">
                     ⏸️ Pausado
                   </div>
@@ -222,7 +230,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
             )}
 
             <div className="flex justify-center space-x-2">
-              {recordingState === 'idle' && (
+              {recordingState === "idle" && (
                 <button
                   onClick={startRecording}
                   disabled={!stream}
@@ -232,8 +240,8 @@ export const VideoModal: React.FC<VideoModalProps> = ({
                   <span>Iniciar Gravação</span>
                 </button>
               )}
-              
-              {recordingState === 'recording' && (
+
+              {recordingState === "recording" && (
                 <>
                   <button
                     onClick={pauseRecording}
@@ -251,8 +259,8 @@ export const VideoModal: React.FC<VideoModalProps> = ({
                   </button>
                 </>
               )}
-              
-              {recordingState === 'paused' && (
+
+              {recordingState === "paused" && (
                 <>
                   <button
                     onClick={resumeRecording}
@@ -281,7 +289,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
                   src={recordedVideoUrl}
                   controls
                   className="w-full rounded-lg shadow-md"
-                  style={{ maxHeight: '250px' }}
+                  style={{ maxHeight: "250px" }}
                 />
                 <div className="flex justify-center space-x-4">
                   <button

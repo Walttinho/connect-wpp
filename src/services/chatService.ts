@@ -1,11 +1,10 @@
-import { Chat, Message, MessageStatus } from '../types';
+import { Chat, Message, MessageStatus } from "../types";
 
 export class ChatService {
   static async sendMessage(
     chatId: string,
     messageText: string
   ): Promise<Message> {
-    // Simular envio de mensagem
     const newMessage: Message = {
       chatId: `m${Date.now()}`,
       text: messageText,
@@ -23,7 +22,6 @@ export class ChatService {
     messageId: string,
     status: MessageStatus
   ): Promise<void> {
-    // Simular atualização de status
     return new Promise((resolve) => {
       setTimeout(() => resolve(), 1000);
     });
@@ -31,7 +29,7 @@ export class ChatService {
 
   static filterChats(chats: Chat[], searchTerm: string): Chat[] {
     if (!searchTerm.trim()) return chats;
-    
+
     return chats.filter(
       (chat) =>
         chat.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

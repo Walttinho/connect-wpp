@@ -1,4 +1,3 @@
-// services/mockData.ts
 import { Chat, MessageTemplate, MediaOption, Message } from "../types";
 import { Camera, File, Video, Mic, FileText } from "lucide-react";
 
@@ -187,7 +186,7 @@ export const ChatService = {
       text: messageText,
       status: "sent",
       timestamp: new Date(),
-      sent: true
+      sent: true,
     };
 
     return Promise.resolve(message);
@@ -203,7 +202,5 @@ export const ChatService = {
 export const SalesforceService = {
   openContact: async (leadId: string) => {
     console.log("Abrindo contato no Salesforce:", leadId);
-    // lógica simulada ou real
   },
 };
-

@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { Upload, File as FileIcon, X, Check } from 'lucide-react';
-import { Modal } from '../../common/Modal';
+import React, { useRef, useState } from "react";
+import { Upload, File as FileIcon, X, Check } from "lucide-react";
+import { Modal } from "../../common/Modal";
 
 interface FileInfo {
   file: File;
   id: string;
-  preview?: string; 
+  preview?: string;
   uploaded: boolean;
 }
 
@@ -15,7 +15,7 @@ interface FileModalProps {
   onFilesUpload?: (files: File[]) => void;
   acceptedTypes?: string;
   maxFiles?: number;
-  maxSize?: number; 
+  maxSize?: number;
 }
 
 export const FileModal: React.FC<FileModalProps> = ({
@@ -24,7 +24,7 @@ export const FileModal: React.FC<FileModalProps> = ({
   onFilesUpload,
   acceptedTypes = "*/*",
   maxFiles = 5,
-  maxSize = 10 // 10MB por padrão
+  maxSize = 10, // 10MB por padrão
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<FileInfo[]>([]);
@@ -43,7 +43,7 @@ export const FileModal: React.FC<FileModalProps> = ({
 
   const createFilePreview = (file: File): Promise<string | undefined> => {
     return new Promise((resolve) => {
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target?.result as string);
         reader.onerror = () => resolve(undefined);
@@ -66,23 +66,23 @@ export const FileModal: React.FC<FileModalProps> = ({
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const validationError = validateFile(file);
-      
+
       if (validationError) {
         setError(validationError);
         return;
       }
 
       const preview = await createFilePreview(file);
-      
+
       newFiles.push({
         file,
         id: generateFileId(),
         preview,
-        uploaded: false
+        uploaded: false,
       });
     }
 
-    setSelectedFiles(prev => [...prev, ...newFiles]);
+    setSelectedFiles((prev) => [...prev, ...newFiles]);
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,8 +90,8 @@ export const FileModal: React.FC<FileModalProps> = ({
     if (files && files.length > 0) {
       processFiles(files);
     }
-    // Limpar o input
-    event.target.value = '';
+
+    event.target.value = "";
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -107,7 +107,7 @@ export const FileModal: React.FC<FileModalProps> = ({
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     setDragOver(false);
-    
+
     const files = event.dataTransfer.files;
     if (files.length > 0) {
       processFiles(files);
@@ -115,45 +115,40 @@ export const FileModal: React.FC<FileModalProps> = ({
   };
 
   const removeFile = (fileId: string) => {
-    setSelectedFiles(prev => prev.filter(f => f.id !== fileId));
+    setSelectedFiles((prev) => prev.filter((f) => f.id !== fileId));
     setError(null);
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return;
-    
+
     setUploading(true);
     setError(null);
-    
+
     try {
-      // Simular upload (substitua pela sua lógica de upload)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Marcar todos os arquivos como enviados
-      setSelectedFiles(prev => 
-        prev.map(file => ({ ...file, uploaded: true }))
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setSelectedFiles((prev) =>
+        prev.map((file) => ({ ...file, uploaded: true }))
       );
-      
-      // Callback para componente pai
-      const files = selectedFiles.map(f => f.file);
+
+      const files = selectedFiles.map((f) => f.file);
       onFilesUpload?.(files);
-      
-      // Fechar modal após sucesso
+
       setTimeout(() => {
         onClose();
         resetModal();
       }, 1000);
-      
     } catch (error) {
-      setError('Erro ao fazer upload dos arquivos. Tente novamente.');
+      setError("Erro ao fazer upload dos arquivos. Tente novamente.");
     } finally {
       setUploading(false);
     }
@@ -172,17 +167,23 @@ export const FileModal: React.FC<FileModalProps> = ({
   };
 
   const getFileIcon = (file: File) => {
-    if (file.type.startsWith('image/')) return '🖼️';
-    if (file.type.startsWith('video/')) return '🎥';
-    if (file.type.startsWith('audio/')) return '🎵';
-    if (file.type.includes('pdf')) return '📄';
-    if (file.type.includes('word')) return '📝';
-    if (file.type.includes('excel') || file.type.includes('spreadsheet')) return '📊';
-    return '📎';
+    if (file.type.startsWith("image/")) return "🖼️";
+    if (file.type.startsWith("video/")) return "🎥";
+    if (file.type.startsWith("audio/")) return "🎵";
+    if (file.type.includes("pdf")) return "📄";
+    if (file.type.includes("word")) return "📝";
+    if (file.type.includes("excel") || file.type.includes("spreadsheet"))
+      return "📊";
+    return "📎";
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Upload de Arquivos" size="lg">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Upload de Arquivos"
+      size="lg"
+    >
       <div className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -193,9 +194,9 @@ export const FileModal: React.FC<FileModalProps> = ({
         {/* Área de Drop */}
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragOver 
-              ? 'border-blue-400 bg-blue-50' 
-              : 'border-gray-300 hover:border-gray-400'
+            dragOver
+              ? "border-blue-400 bg-blue-50"
+              : "border-gray-300 hover:border-gray-400"
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -245,10 +246,12 @@ export const FileModal: React.FC<FileModalProps> = ({
                     />
                   ) : (
                     <div className="w-10 h-10 flex items-center justify-center bg-gray-200 rounded">
-                      <span className="text-lg">{getFileIcon(fileInfo.file)}</span>
+                      <span className="text-lg">
+                        {getFileIcon(fileInfo.file)}
+                      </span>
                     </div>
                   )}
-                  
+
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
                       {fileInfo.file.name}
@@ -289,7 +292,7 @@ export const FileModal: React.FC<FileModalProps> = ({
             </button>
             <button
               onClick={uploadFiles}
-              disabled={uploading || selectedFiles.every(f => f.uploaded)}
+              disabled={uploading || selectedFiles.every((f) => f.uploaded)}
               className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg flex items-center space-x-2 transition-colors"
             >
               {uploading ? (
@@ -297,7 +300,7 @@ export const FileModal: React.FC<FileModalProps> = ({
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                   <span>Enviando...</span>
                 </>
-              ) : selectedFiles.every(f => f.uploaded) ? (
+              ) : selectedFiles.every((f) => f.uploaded) ? (
                 <>
                   <Check size={16} />
                   <span>Concluído</span>

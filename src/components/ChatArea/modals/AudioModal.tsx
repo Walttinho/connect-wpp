@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Mic, Play, Pause, Square, RotateCcw } from 'lucide-react';
-import { Modal } from '../../common/Modal';
+import React, { useRef, useEffect, useState } from "react";
+import { Mic, Play, Pause, Square, RotateCcw } from "lucide-react";
+import { Modal } from "../../common/Modal";
 
-type RecordingState = 'idle' | 'recording' | 'paused' | 'stopped';
+type RecordingState = "idle" | "recording" | "paused" | "stopped";
 
 interface AudioModalProps {
   isOpen: boolean;
@@ -10,14 +10,14 @@ interface AudioModalProps {
   onRecordingComplete?: (audioBlob: Blob, audioUrl: string) => void;
 }
 
-export const AudioModal: React.FC<AudioModalProps> = ({ 
-  isOpen, 
+export const AudioModal: React.FC<AudioModalProps> = ({
+  isOpen,
   onClose,
-  onRecordingComplete 
+  onRecordingComplete,
 }) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [recordingState, setRecordingState] = useState<RecordingState>('idle');
+  const [recordingState, setRecordingState] = useState<RecordingState>("idle");
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -30,9 +30,9 @@ export const AudioModal: React.FC<AudioModalProps> = ({
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (recordingState === 'recording') {
+    if (recordingState === "recording") {
       interval = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -42,7 +42,7 @@ export const AudioModal: React.FC<AudioModalProps> = ({
     if (!isOpen) {
       cleanup();
     }
-    
+
     return () => {
       cleanup();
     };
@@ -58,7 +58,7 @@ export const AudioModal: React.FC<AudioModalProps> = ({
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
-    setRecordingState('idle');
+    setRecordingState("idle");
     setRecordingTime(0);
     setAudioLevel(0);
     setError(null);
@@ -66,55 +66,58 @@ export const AudioModal: React.FC<AudioModalProps> = ({
 
   const setupAudioAnalyser = (stream: MediaStream) => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
-      
+
       analyser.fftSize = 256;
       microphone.connect(analyser);
-      
+
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
-      
+
       const updateAudioLevel = () => {
-        if (analyserRef.current && recordingState === 'recording') {
-          const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        if (analyserRef.current && recordingState === "recording") {
+          const dataArray = new Uint8Array(
+            analyserRef.current.frequencyBinCount
+          );
           analyserRef.current.getByteFrequencyData(dataArray);
-          
+
           const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
           setAudioLevel(average);
-          
+
           animationRef.current = requestAnimationFrame(updateAudioLevel);
         }
       };
-      
+
       updateAudioLevel();
     } catch (error) {
-      console.error('Erro ao configurar analisador de áudio:', error);
+      console.error("Erro ao configurar analisador de áudio:", error);
     }
   };
 
   const startRecording = async () => {
     setError(null);
-    
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true
-        } 
+          autoGainControl: true,
+        },
       });
-      
+
       setupAudioAnalyser(stream);
-      
+
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm'
+        mimeType: "audio/webm",
       });
-      
+
       mediaRecorderRef.current = mediaRecorder;
       const chunks: Blob[] = [];
-      
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunks.push(event.data);
@@ -122,46 +125,46 @@ export const AudioModal: React.FC<AudioModalProps> = ({
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const blob = new Blob(chunks, { type: "audio/webm" });
         const url = URL.createObjectURL(blob);
         setRecordedAudioUrl(url);
         setRecordedChunks(chunks);
-        
-        // Parar todas as tracks do stream
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Callback para componente pai
+
+        stream.getTracks().forEach((track) => track.stop());
+
         onRecordingComplete?.(blob, url);
       };
 
       mediaRecorder.start(1000);
-      setRecordingState('recording');
+      setRecordingState("recording");
       setRecordingTime(0);
     } catch (error) {
-      console.error('Erro ao acessar microfone:', error);
-      setError('Erro ao acessar o microfone. Verifique as permissões do navegador.');
+      console.error("Erro ao acessar microfone:", error);
+      setError(
+        "Erro ao acessar o microfone. Verifique as permissões do navegador."
+      );
     }
   };
 
   const pauseRecording = () => {
-    if (mediaRecorderRef.current && recordingState === 'recording') {
+    if (mediaRecorderRef.current && recordingState === "recording") {
       mediaRecorderRef.current.pause();
-      setRecordingState('paused');
+      setRecordingState("paused");
       setAudioLevel(0);
     }
   };
 
   const resumeRecording = () => {
-    if (mediaRecorderRef.current && recordingState === 'paused') {
+    if (mediaRecorderRef.current && recordingState === "paused") {
       mediaRecorderRef.current.resume();
-      setRecordingState('recording');
+      setRecordingState("recording");
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-      setRecordingState('stopped');
+      setRecordingState("stopped");
       setAudioLevel(0);
     }
   };
@@ -182,7 +185,7 @@ export const AudioModal: React.FC<AudioModalProps> = ({
 
   const saveAudio = () => {
     if (recordedAudioUrl) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = `audio_${new Date().getTime()}.webm`;
       link.href = recordedAudioUrl;
       link.click();
@@ -195,7 +198,7 @@ export const AudioModal: React.FC<AudioModalProps> = ({
       URL.revokeObjectURL(recordedAudioUrl);
     }
     setRecordedAudioUrl(null);
-    setRecordingState('idle');
+    setRecordingState("idle");
     setRecordingTime(0);
     setIsPlaying(false);
     setRecordedChunks([]);
@@ -204,7 +207,9 @@ export const AudioModal: React.FC<AudioModalProps> = ({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleClose = () => {
@@ -222,43 +227,54 @@ export const AudioModal: React.FC<AudioModalProps> = ({
         )}
 
         <div className="flex justify-center">
-          <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
-            recordingState === 'recording' 
-              ? 'bg-red-100 animate-pulse' 
-              : 'bg-gray-100'
-          }`} style={{
-            transform: recordingState === 'recording' ? `scale(${1 + audioLevel / 500})` : 'scale(1)'
-          }}>
-            <Mic size={48} className={
-              recordingState === 'recording' ? 'text-red-500' : 'text-gray-500'
-            } />
+          <div
+            className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
+              recordingState === "recording"
+                ? "bg-red-100 animate-pulse"
+                : "bg-gray-100"
+            }`}
+            style={{
+              transform:
+                recordingState === "recording"
+                  ? `scale(${1 + audioLevel / 500})`
+                  : "scale(1)",
+            }}
+          >
+            <Mic
+              size={48}
+              className={
+                recordingState === "recording"
+                  ? "text-red-500"
+                  : "text-gray-500"
+              }
+            />
           </div>
         </div>
 
-        {recordingState !== 'idle' && (
+        {recordingState !== "idle" && (
           <div className="space-y-2">
             <div className="text-2xl font-mono text-gray-800">
               {formatTime(recordingTime)}
             </div>
-            {recordingState === 'recording' && (
+            {recordingState === "recording" && (
               <div className="space-y-2">
                 <div className="text-red-500 font-semibold">🔴 Gravando</div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-red-500 h-2 rounded-full transition-all duration-100"
                     style={{ width: `${Math.min(audioLevel * 2, 100)}%` }}
                   />
                 </div>
               </div>
             )}
-            {recordingState === 'paused' && (
+            {recordingState === "paused" && (
               <div className="text-yellow-500 font-semibold">⏸️ Pausado</div>
             )}
           </div>
         )}
 
         <div className="flex justify-center space-x-2">
-          {recordingState === 'idle' && (
+          {recordingState === "idle" && (
             <button
               onClick={startRecording}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
@@ -267,8 +283,8 @@ export const AudioModal: React.FC<AudioModalProps> = ({
               <span>Iniciar Gravação</span>
             </button>
           )}
-          
-          {recordingState === 'recording' && (
+
+          {recordingState === "recording" && (
             <>
               <button
                 onClick={pauseRecording}
@@ -286,8 +302,8 @@ export const AudioModal: React.FC<AudioModalProps> = ({
               </button>
             </>
           )}
-          
-          {recordingState === 'paused' && (
+
+          {recordingState === "paused" && (
             <>
               <button
                 onClick={resumeRecording}
@@ -316,9 +332,9 @@ export const AudioModal: React.FC<AudioModalProps> = ({
               ref={audioRef}
               src={recordedAudioUrl}
               onEnded={() => setIsPlaying(false)}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
-            
+
             <div className="flex justify-center space-x-2">
               {!isPlaying ? (
                 <button

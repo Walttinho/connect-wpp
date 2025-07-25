@@ -1,7 +1,7 @@
-import React from 'react';
-import { X } from 'lucide-react';
-import { MessageTemplate } from '../../types';
-import { TemplateItem } from './TemplateItem';
+import React from "react";
+import { X } from "lucide-react";
+import { MessageTemplate } from "../../types";
+import { TemplateItem } from "./TemplateItem";
 
 interface TemplatePanelProps {
   templates: MessageTemplate[];
@@ -16,8 +16,6 @@ export const TemplatePanel: React.FC<TemplatePanelProps> = ({
 }) => {
   const handleTemplateClick = (template: MessageTemplate) => {
     const personalizedMessage = onTemplateApply(template);
-    // Aqui você pode implementar a lógica para inserir a mensagem no input
-    console.log('Mensagem personalizada:', personalizedMessage);
     onClose();
   };
 
@@ -27,10 +25,7 @@ export const TemplatePanel: React.FC<TemplatePanelProps> = ({
         <h3 className="font-semibold text-gray-900 text-sm md:text-base">
           Templates
         </h3>
-        <button
-          onClick={onClose}
-          className="text-gray-500 hover:text-gray-700"
-        >
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
           <X className="w-4 h-4" />
         </button>
       </div>

@@ -1,3 +1,4 @@
+//src/hooks/useChat.ts
 import { useState, useCallback } from "react";
 import { Chat, MessageTemplate } from "../types";
 import { ChatService } from "../services/mockData";
@@ -20,7 +21,6 @@ export const useChat = (initialChats: Chat[]) => {
           messageText
         );
 
-        // Atualizar o chat com a nova mensagem
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.id === selectedChat.id
@@ -34,7 +34,6 @@ export const useChat = (initialChats: Chat[]) => {
           )
         );
 
-        // Simular mudanças de status da mensagem
         setTimeout(() => {
           setChats((prevChats) =>
             prevChats.map((chat) =>
@@ -78,10 +77,20 @@ export const useChat = (initialChats: Chat[]) => {
   );
 
   const applyTemplate = useCallback(
-    (template: MessageTemplate): string => {
-      if (!selectedChat) return template.content;
+    (template: MessageTemplate, chatToUse?: Chat): string => {
+      const currentChat = chatToUse || selectedChat;
 
-      return applyTemplatePersonalization(template, selectedChat.contact.name);
+      if (!currentChat) {
+        console.warn("Nenhum chat selecionado para aplicar template");
+        return template.content;
+      }
+
+      const personalizedContent = applyTemplatePersonalization(
+        template,
+        currentChat.contact.name
+      );
+
+      return personalizedContent;
     },
     [selectedChat]
   );

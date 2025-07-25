@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 
-type ModalType = 'camera' | 'video' | 'audio' | 'file' | null;
+type ModalType = "camera" | "video" | "audio" | "file" | null;
 
 export const useMediaActions = () => {
   const [showMediaDropdown, setShowMediaDropdown] = useState<boolean>(false);
@@ -13,16 +13,16 @@ export const useMediaActions = () => {
         onTemplateToggle?.();
         break;
       case "camera":
-        setActiveModal('camera');
+        setActiveModal("camera");
         break;
       case "file":
-        setActiveModal('file');
+        setActiveModal("file");
         break;
       case "video":
-        setActiveModal('video');
+        setActiveModal("video");
         break;
       case "audio":
-        setActiveModal('audio');
+        setActiveModal("audio");
         break;
       default:
         console.log(`Ação não implementada: ${action}`);
@@ -38,29 +38,26 @@ export const useMediaActions = () => {
     setActiveModal(modalType);
   };
 
-  // Callbacks para quando as ações são concluídas
   const handleCameraCapture = (imageData: string) => {
-    console.log('Foto capturada:', imageData);
+    console.log("Foto capturada:", imageData);
     // TODO: processar a imagem capturada
-    
   };
 
   const handleVideoRecording = (videoBlob: Blob, videoUrl: string) => {
-    console.log('Vídeo gravado:', { videoBlob, videoUrl });
+    console.log("Vídeo gravado:", { videoBlob, videoUrl });
     // TODO: processar o vídeo gravado
   };
 
   const handleAudioRecording = (audioBlob: Blob, audioUrl: string) => {
-    console.log('Áudio gravado:', { audioBlob, audioUrl });
+    console.log("Áudio gravado:", { audioBlob, audioUrl });
     // TODO: processar o áudio gravado
   };
 
   const handleFilesUpload = (files: File[]) => {
-    console.log('Arquivos selecionados:', files);
+    console.log("Arquivos selecionados:", files);
     // TODO: processar os arquivos selecionados
   };
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -78,20 +75,13 @@ export const useMediaActions = () => {
   }, []);
 
   return {
-    // Estados
     showMediaDropdown,
     setShowMediaDropdown,
     activeModal,
-    
-    // Refs
     mediaDropdownRef,
-    
-    // Funções
     handleMediaAction,
     closeModal,
     openModal,
-    
-    // Callbacks
     handleCameraCapture,
     handleVideoRecording,
     handleAudioRecording,

@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react';
-import { MessageSquare } from 'lucide-react';
-import { Chat, MessageTemplate } from '../../types';
-import { MessageList } from './MessageList';
-import { MessageInput } from './MessageInput';
-import { TemplatePanel } from './TemplatePanel';
-import { ChatHeader } from './ChatHeader';
+//src/components/ChatArea/ChatArea.tsx
+import React, { useRef, useEffect, useState } from "react";
+import { MessageSquare } from "lucide-react";
+import { Chat, MessageTemplate } from "../../types";
+import { MessageList } from "./MessageList";
+import { MessageInput } from "./MessageInput";
+import { TemplatePanel } from "./TemplatePanel";
+import { ChatHeader } from "./ChatHeader";
 
 interface ChatAreaProps {
   selectedChat: Chat | null;
@@ -14,7 +15,7 @@ interface ChatAreaProps {
   isLoading: boolean;
   showTemplates: boolean;
   onTemplateToggle: () => void;
-  onTemplateApply: (template: MessageTemplate) => string;
+  onTemplateApply: (template: MessageTemplate, chat?: Chat) => string;
   messageTemplates: MessageTemplate[];
 }
 
@@ -30,12 +31,33 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   messageTemplates,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [templateMessage, setTemplateMessage] = useState<string>("");
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChat?.messages]);
+
+ 
+  useEffect(() => {
+    setTemplateMessage("");
+  }, [selectedChat?.id]);
+
+  const handleTemplateApply = (template: MessageTemplate): string => {
+    
+   
+    if (!selectedChat) {
+      console.warn("Nenhum chat selecionado");
+      return template.content;
+    }
+
+   
+    const personalized = onTemplateApply(template, selectedChat);
+    
+    setTemplateMessage(personalized);
+    return personalized;
+  };
 
   if (!selectedChat) {
     return (
@@ -69,7 +91,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       {showTemplates && (
         <TemplatePanel
           templates={messageTemplates}
-          onTemplateApply={onTemplateApply}
+          onTemplateApply={handleTemplateApply}
           onClose={onTemplateToggle}
         />
       )}
@@ -78,6 +100,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         onSendMessage={onSendMessage}
         onTemplateToggle={onTemplateToggle}
         isLoading={isLoading}
+        defaultMessage={templateMessage}
       />
     </div>
   );

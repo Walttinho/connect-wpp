@@ -6,8 +6,6 @@ import { initialChats, messageTemplates } from "../services/mockData";
 import { SalesforceService } from "../services/mockData";
 import { useChat } from "../hooks/useChat";
 import { useSidebar } from "../hooks/useSidebar";
-
-// Components
 import { Header } from "./Header/Header";
 import { ChatList } from "./ChatList/ChatList";
 import { ChatArea } from "./ChatArea/ChatArea";
@@ -17,18 +15,12 @@ const WhatsAppSalesforceApp: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewType>("chat");
   const [showTemplates, setShowTemplates] = useState<boolean>(false);
 
-  // Custom hooks
-  const {
-    chats,    
-    isLoading,
-    sendMessage,
-    applyTemplate,
-  } = useChat(initialChats);
-const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+  const { chats, isLoading, sendMessage, applyTemplate } =
+    useChat(initialChats);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 
   const { showSidebar, toggleSidebar, closeSidebar } = useSidebar();
 
-  // Handlers
   const handleSendMessage = async (messageText: string) => {
     await sendMessage(messageText);
   };
@@ -43,9 +35,9 @@ const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   };
 
   const handleChatSelect = (chat: Chat) => {
-  setSelectedChat(chat);
-  closeSidebar();
-};
+    setSelectedChat(chat);
+    closeSidebar();
+  };
 
   const handleChatClose = () => {
     setSelectedChat(null);
