@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, X, User } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Chat } from '../../types';
 import { ChatService } from '../../services/mockData';
 import { ChatListItem } from './ChatListItem';

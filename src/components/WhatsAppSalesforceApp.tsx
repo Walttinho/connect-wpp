@@ -23,7 +23,6 @@ const WhatsAppSalesforceApp: React.FC = () => {
     isLoading,
     sendMessage,
     applyTemplate,
-    filterChats,
   } = useChat(initialChats);
 const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 

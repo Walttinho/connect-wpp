@@ -1,5 +1,4 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
 import { ViewType } from '../../types';
 import Image from 'next/image';
 
