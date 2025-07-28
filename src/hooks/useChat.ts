@@ -1,7 +1,7 @@
 //src/hooks/useChat.ts
 import { useState, useCallback } from "react";
 import { Chat, MessageTemplate } from "../types";
-import { ChatService } from "../services/mockData";
+import { ChatService } from "../services/chatService";
 import { applyTemplatePersonalization } from "../utils/templateUtils";
 
 export const useChat = (initialChats: Chat[]) => {

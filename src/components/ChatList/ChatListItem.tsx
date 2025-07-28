@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Chat } from "@/types";
 import { formatDate } from "@/utils/dateUtils";
 import { getStatusColor, getStatusIcon } from "@/utils/statusUtils";
@@ -16,6 +17,13 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
   onSelect,
   onSalesforceOpen,
 }) => {
+  const [formattedTime, setFormattedTime] = useState("");
+
+  useEffect(() => {    
+    const formatted = formatDate(chat.timestamp);
+    setFormattedTime(formatted);
+  }, [chat.timestamp]);
+
   return (
     <div
       onClick={onSelect}
@@ -43,7 +51,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
             </div>
             <div className="flex items-center space-x-1">
               <span className="text-xs text-gray-500">
-                {formatDate(chat.timestamp)}
+                {formattedTime || "--:--"}
               </span>
               {chat.unread > 0 && (
                 <span className="bg-green-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">

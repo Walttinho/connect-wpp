@@ -179,26 +179,6 @@ export const mediaOptions: MediaOption[] = [
   },
 ];
 
-export const ChatService = {
-  sendMessage(chatId: string, messageText: string): Promise<Message> {
-    const message: Message = {
-      chatId,
-      text: messageText,
-      status: "sent",
-      timestamp: new Date(),
-      sent: true,
-    };
-
-    return Promise.resolve(message);
-  },
-
-  filterChats(chats: Chat[], searchTerm: string): Chat[] {
-    return chats.filter((chat) =>
-      chat.contact.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  },
-};
-
 export const SalesforceService = {
   openContact: async (leadId: string) => {
     console.log("Abrindo contato no Salesforce:", leadId);

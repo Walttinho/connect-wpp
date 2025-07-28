@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Chat } from '../../types';
-import { ChatService } from '../../services/mockData';
 import { ChatListItem } from './ChatListItem';
+import { ChatService } from '@/services/chatService';
 
 interface ChatListProps {
   chats: Chat[];
