@@ -5,7 +5,7 @@ import {
   CheckCircle,
   Loader
 } from "lucide-react";
-import { MessageTemplate } from "../../types";
+import { Chat, MessageTemplate } from "../../types";
 import { TemplatePanel } from "./TemplatePanel";
 import { ConnectChatQueue } from "./ConnectChatQueue";
 import { AmazonConnectService, ConnectAgent } from "@/services/amazonConnectService";
@@ -14,11 +14,14 @@ import { useAmazonConnect } from "../../hooks/useAmazonConnect";
 import { MessageInput } from "./MessageInput";
 
 interface ChatAreaProps {
+  selectedChat?: Chat | null;
+  onSendMessage: (messageText: string) => Promise<void>;
   isLoading: boolean;
   showTemplates: boolean;
   onTemplateToggle: () => void;
   onTemplateApply: (template: MessageTemplate) => string;
   messageTemplates: MessageTemplate[];
+  onChatClose: () => void;
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({

@@ -5,6 +5,7 @@ import { ChatListItem } from './ChatListItem';
 import { ChatService } from '@/services/chatService';
 
 interface ChatListProps {
+  chats: Chat[];
   connectChats: Chat[];
   selectedChat: Chat | null;
   onChatSelect: (chat: Chat) => void;

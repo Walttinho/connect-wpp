@@ -63,6 +63,7 @@ const WhatsAppSalesforceApp: React.FC = () => {
 
           <ChatList
             chats={chats}
+            connectChats={chats}
             selectedChat={selectedChat}
             onChatSelect={handleChatSelect}
             onSalesforceOpen={handleSalesforceOpen}
@@ -73,7 +74,6 @@ const WhatsAppSalesforceApp: React.FC = () => {
           <ChatArea
             selectedChat={selectedChat}
             onChatClose={handleChatClose}
-            onSalesforceOpen={handleSalesforceOpen}
             onSendMessage={handleSendMessage}
             isLoading={isLoading}
             showTemplates={showTemplates}
