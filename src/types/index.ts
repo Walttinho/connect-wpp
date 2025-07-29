@@ -20,7 +20,7 @@ export interface Chat {
   lastMessage: string;
   timestamp: Date;
   unread: number;
-  status: "sent" | "delivered" | "read";
+  status: "connected" | "disconnected";
   messages: Message[];
   connectContactId?: string;
 }

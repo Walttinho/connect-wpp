@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { Search, X, Phone, Users, ChevronDown, ChevronRight, MessageCircle } from 'lucide-react';
-import { Chat } from '../../types';
-import { ChatListItem } from './ChatListItem';
-import { ChatService } from '@/services/chatService';
+import React, { useState } from "react";
+import {
+  Search,
+  X,
+  Users,
+} from "lucide-react";
+import { Chat } from "../../types";
+import { ChatListItem } from "./ChatListItem";
+import { ChatService } from "@/services/chatService";
 
 interface ChatListProps {
   chats: Chat[];
@@ -23,9 +27,11 @@ export const ChatList: React.FC<ChatListProps> = ({
   onSidebarClose,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [showConnectSection, setShowConnectSection] = useState<boolean>(true);
 
-  const filteredConnectChats = ChatService.filterChats(connectChats, searchTerm);
+  const filteredConnectChats = ChatService.filterChats(
+    connectChats,
+    searchTerm
+  );
 
   const handleChatSelect = (chat: Chat) => {
     onChatSelect(chat);
@@ -69,19 +75,8 @@ export const ChatList: React.FC<ChatListProps> = ({
             placeholder="Buscar conversas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            className="w-full pl-10 text-gray-700 pr-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           />
-        </div>
-      </div>
-
-      {/* Estatísticas Rápidas */}
-      <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
-        <div className="flex items-center justify-between text-xs text-gray-600">
-          <div className="flex items-center space-x-1">
-            <MessageCircle className="w-3 h-3" />
-            <span>Connect: {filteredConnectChats.length}</span>
-          </div>
-          
         </div>
       </div>
 
@@ -89,18 +84,12 @@ export const ChatList: React.FC<ChatListProps> = ({
       <div className="flex-1 overflow-y-auto">
         {connectChats?.length > 0 ? (
           <>
-            <button
-              onClick={() => setShowConnectSection(!showConnectSection)}
-              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
+            <button className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
               <div className="flex items-center space-x-2">
-                {showConnectSection ? (
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-500" />
-                )}
-                <Phone className="w-4 h-4 text-blue-500" />
-                <span className="font-medium text-gray-700">Amazon Connect</span>
+                <Users className="w-4 h-4 text-blue-500" />
+                <span className="font-medium text-gray-700">
+                  Amazon Connect
+                </span>
                 <span className="text-xs text-gray-500">
                   ({filteredConnectChats.length})
                 </span>
@@ -112,27 +101,29 @@ export const ChatList: React.FC<ChatListProps> = ({
               )}
             </button>
 
-            {showConnectSection && (
-              <div className="bg-blue-50/30">
-                {filteredConnectChats.length > 0 ? (
-                  filteredConnectChats.map((chat) => (
-                    <ChatListItem
-                      key={chat.id}
-                      chat={chat}
-                      isSelected={selectedChat?.id === chat.id}
-                      onSelect={() => handleChatSelect(chat)}
-                      onSalesforceOpen={() => onSalesforceOpen(chat.contact.leadId)}
-                      showChannelIndicator={true}
-                      isConnectChat={true}
-                    />
-                  ))
-                ) : (
-                  <div className="px-4 py-6 text-center text-gray-500 text-sm">
-                    {searchTerm ? 'Nenhuma conversa encontrada' : 'Nenhuma conversa do Connect'}
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="bg-blue-50/30">
+              {filteredConnectChats.length > 0 ? (
+                filteredConnectChats.map((chat) => (
+                  <ChatListItem
+                    key={chat.id}
+                    chat={chat}
+                    isSelected={selectedChat?.id === chat.id}
+                    onSelect={() => handleChatSelect(chat)}
+                    onSalesforceOpen={() =>
+                      onSalesforceOpen(chat.contact.leadId)
+                    }
+                    showChannelIndicator={true}
+                    isConnectChat={true}
+                  />
+                ))
+              ) : (
+                <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                  {searchTerm
+                    ? "Nenhuma conversa encontrada"
+                    : "Nenhuma conversa do Connect"}
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
@@ -149,19 +140,21 @@ export const ChatList: React.FC<ChatListProps> = ({
         )}
 
         {/* Resultado de busca vazio */}
-        {connectChats?.length > 0 && searchTerm && filteredConnectChats.length === 0 && (
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="text-center">
-              <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-700 mb-2">
-                Nenhum resultado
-              </h3>
-              <p className="text-gray-500 text-sm">
-                Não encontramos conversas com "{searchTerm}"
-              </p>
+        {connectChats?.length > 0 &&
+          searchTerm &&
+          filteredConnectChats.length === 0 && (
+            <div className="flex-1 flex items-center justify-center p-8">
+              <div className="text-center">
+                <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                  Nenhum resultado
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  Não encontramos conversas com "{searchTerm}"
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {/* Footer com status de conexão */}
