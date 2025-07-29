@@ -6,6 +6,7 @@ import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
 import { TemplatePanel } from "./TemplatePanel";
 import { ChatHeader } from "./ChatHeader";
+import { AmazonConnectService, ConnectAgent } from "@/services/amazonConnectService";
 
 interface ChatAreaProps {
   selectedChat: Chat | null;
@@ -32,31 +33,61 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [templateMessage, setTemplateMessage] = useState<string>("");
+  const ccpContainerRef = useRef<HTMLDivElement>(null);
+  const connectService = AmazonConnectService.getInstance();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [agentStatus, setAgentStatus] = useState<ConnectAgent | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [selectedChat?.messages]);
+  initializeConnect();
+}, []);
 
- 
+
   useEffect(() => {
     setTemplateMessage("");
   }, [selectedChat?.id]);
 
   const handleTemplateApply = (template: MessageTemplate): string => {
-    
-   
     if (!selectedChat) {
       console.warn("Nenhum chat selecionado");
       return template.content;
     }
 
-   
     const personalized = onTemplateApply(template, selectedChat);
-    
+
     setTemplateMessage(personalized);
     return personalized;
+  };
+
+  const initializeConnect = async () => {
+    console.log("Inicializando Amazon Connect...");
+    
+    try {
+      if (ccpContainerRef.current && !isInitialized) {
+        setError(null);
+        await connectService.initializeCCP(ccpContainerRef.current);
+        setIsInitialized(true);
+
+        // Obter status inicial do agente
+        setTimeout(async () => {
+          try {
+            const status = await connectService.getAgentStatus();
+            setAgentStatus(status);
+          } catch (err) {
+            console.log("Aguardando login do agente...");
+          }
+        }, 3000);
+      }
+      window.connect.agent((agent) => {
+  console.log("Agente conectado:", agent.getName());
+});
+    } catch (error) {
+      console.error("Erro ao inicializar Connect:", error);
+      setError(
+        "Erro ao conectar com Amazon Connect. Verifique a configuração."
+      );
+    }
   };
 
   if (!selectedChat) {
@@ -75,6 +106,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     );
   }
 
+  //TODO adicionar chat do connect no topo da da fila com as action de aceitar ou rejeitar
+
   return (
     <div className="flex-1 flex flex-col bg-gradient-to-b from-blue-25 to-gray-25">
       <ChatHeader
@@ -84,6 +117,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       />
 
       <MessageList
+        //TODO: Implementar historico de chats atendidos pelo amazon connect
         messages={selectedChat.messages}
         messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
       />
@@ -102,6 +136,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         isLoading={isLoading}
         defaultMessage={templateMessage}
       />
+      <div ref={ccpContainerRef} style={{ display: "none" }} />
     </div>
   );
 };

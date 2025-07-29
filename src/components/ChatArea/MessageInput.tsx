@@ -52,7 +52,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       handleSend();
     }
   };
-
+//TODO: implementar envio e recebimento de mesnagens pelo connect ccp
   return (
     <>
       <div className="bg-white border-t border-blue-100 p-3 md:p-4">

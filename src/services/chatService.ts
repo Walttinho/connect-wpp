@@ -1,5 +1,7 @@
 import { Chat, Message, MessageStatus } from "../types";
 
+//TODO: Implementar Amazon Connect CCP service, para chat e voz
+
 export class ChatService {
   static async sendMessage(
     chatId: string,
