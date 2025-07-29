@@ -22,6 +22,7 @@ export interface Chat {
   unread: number;
   status: "sent" | "delivered" | "read";
   messages: Message[];
+  connectContactId?: string;
 }
 
 export interface MessageTemplate {

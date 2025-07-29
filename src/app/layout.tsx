@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Connect WhatsApp + Salesforce',
-  description: 'Aplicação integrada de WhatsApp e Salesforce para Amazon Connect',
+  title: 'Connect + Salesforce',
+  description: 'Aplicação integrada de Amazon Connect e Salesforce',
 };
 
 export default function RootLayout({

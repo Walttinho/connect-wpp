@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, ExternalLink, Settings, Menu } from 'lucide-react';
+import { Settings, Menu, Database,  Users } from 'lucide-react';
 import { ViewType } from '../../types';
 
 interface HeaderProps {
@@ -34,8 +34,8 @@ export const Header: React.FC<HeaderProps> = ({
                   : "text-blue-600 hover:bg-blue-50"
               }`}
             >
-              <MessageCircle className="w-4 h-4 inline mr-1 md:mr-2" />
-              <span className="hidden sm:inline">WhatsApp</span>
+              <Users className="w-4 h-4 inline mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Connect</span>
             </button>
             <button
               onClick={() => onViewChange("salesforce")}
@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <ExternalLink className="w-4 h-4 inline mr-1 md:mr-2" />
+              <Database className="w-4 h-4 inline mr-1 md:mr-2" />
               <span className="hidden sm:inline">Salesforce</span>
             </button>
           </div>

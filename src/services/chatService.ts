@@ -29,14 +29,21 @@ export class ChatService {
     });
   }
 
-  static filterChats(chats: Chat[], searchTerm: string): Chat[] {
-    if (!searchTerm.trim()) return chats;
+  static filterChats(chats: Chat[] = [], searchTerm: string): Chat[] {
+  if (!searchTerm?.trim()) return chats;
 
-    return chats.filter(
-      (chat) =>
-        chat.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        chat.contact.phone.includes(searchTerm) ||
-        chat.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
+  const lowerSearch = searchTerm.toLowerCase();
+
+  return chats.filter((chat) => {
+    const name = chat.contact?.name?.toLowerCase() || "";
+    const phone = chat.contact?.phone || "";
+    const lastMessage = chat.lastMessage?.toLowerCase() || "";
+
+    return (
+      name.includes(lowerSearch) ||
+      phone.includes(lowerSearch) ||
+      lastMessage.includes(lowerSearch)
     );
-  }
+  });
+}
 }

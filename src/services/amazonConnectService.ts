@@ -61,8 +61,8 @@ export class AmazonConnectService {
       // Inicializa o CCP
       (window as any).connect.core.initCCP(containerDiv, {
         ccpUrl: ccpUrl,
-        loginPopup: true,
-        loginPopupAutoClose: true,
+        loginPopup: false,
+        loginPopupAutoClose: false,
         loginOptions: {
           autoClose: true,
           height: 600,
@@ -104,7 +104,7 @@ export class AmazonConnectService {
       }
 
       const script = document.createElement('script');
-      script.src = 'https://d2q3jobmvpx01.cloudfront.net/amazon-connect-streams-min.js';
+      script.src = 'https://unpkg.com/amazon-connect-streams@2.18.4/release/connect-streams.js';
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('Falha ao carregar Amazon Connect Streams'));
       document.head.appendChild(script);
